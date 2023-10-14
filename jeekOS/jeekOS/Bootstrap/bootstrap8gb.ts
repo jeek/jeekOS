@@ -5,7 +5,9 @@ import { Servers } from "jeekOS/Servers/servers";
 
 export async function bootstrap8gb(ns: NS): Promise<void> {
     // let targetServer = new SimpleServer(ns, target);
-    while (64 > (await Do(ns, "ns.getServerMaxRam", "home"))!) {
+    ns.write("/tmp/weaken.js", `export async function main(ns) {await ns.weaken(ns.args[0]);}`, `w`);
+    ns.write("/tmp/grow.js", `export async function main(ns) {await ns.grow(ns.args[0]);}`, `w`);
+    // while (64 > (await Do(ns, "ns.getServerMaxRam", "home"))!) {
         let targets = new Servers(ns);
         while (!targets.initialized) {
             await ns.asleep(1);
@@ -25,15 +27,47 @@ export async function bootstrap8gb(ns: NS): Promise<void> {
         if (target == "home") {
             target = "n00dles";
         }
-
+        await ns.asleep(0);
         if ((await Do(ns, "ns.getServerSecurityLevel", target))! > (await Do(ns, "ns.getServerMinSecurityLevel", target))!) {
-            await DoMore(ns, 16, "await ns.weaken", target);
+            for (let server of targets.servers) {
+                if (server.name != "home") {
+                    if (await Do(ns, "ns.hasRootAccess", server.name)) {
+                        await Do(ns, "ns.scp", "/tmp/weaken.js", server.name, "home");
+                        await Do(ns, "ns.scp", "/tmp/grow.js", server.name, "home");
+                    }
+                    let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", server.name) as number) - (await Do(ns, "ns.getServerUsedRam", server.name) as number))! / 1.75);
+                    if (threads > 0) {
+                        await Do(ns, "ns.exec", "/tmp/weaken.js", server.name, threads, target);
+                    }
+                }
+            }
+            await ns.asleep(0);
+            let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", "home") as number)! - ((await Do(ns, "ns.getServerUsedRam", "home")) as number))! / 1.75);
+            if (threads > 0) {
+                await DoMore(ns, threads, "await ns.weaken", target);
+            }
         } else {
             if ((await Do(ns, "ns.getServerMoneyAvailable", target))! < (await Do(ns, "ns.getServerMaxMoney", target))!) {
-                await DoMore(ns, 16, "await ns.grow", target);
+                for (let server of targets.servers) {
+                    if (server.name != "home") {
+                        if (await Do(ns, "ns.hasRootAccess", server.name)) {
+                            await Do(ns, "ns.scp", "/tmp/grow.js", server.name, "home");
+                        }
+                        let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", server.name) as number) - (await Do(ns, "ns.getServerUsedRam", server.name) as number))! / 1.75);
+                        if (threads > 0) {
+                            await Do(ns, "ns.exec", "/tmp/grow.js", server.name, threads, target);
+                        }
+                    }
+                }
+                await ns.asleep(0);
+                let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", "home") as number)! - ((await Do(ns, "ns.getServerUsedRam", "home")) as number))! / 1.75);
+                if (threads > 0) {
+                    await DoMore(ns, threads, "await ns.grow", target);
+                }
             } else {
-                await DoMore(ns, 16, "await ns.hack", target);
+                let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", "home") as number)! - ((await Do(ns, "ns.getServerUsedRam", "home")) as number))! / 1.75);
+                await DoMore(ns, threads, "await ns.hack", target);
             }
         }
-    }
+    // }
 }
