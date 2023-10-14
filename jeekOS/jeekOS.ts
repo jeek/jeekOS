@@ -5,6 +5,7 @@ import { Servers } from "jeekOS/Servers/servers";
 
 export async function main(ns: NS): Promise<void> {
     let servers = new Servers(ns);
+    await servers.popall();
     servers.popallloop();
     while (true) {
         await bootstrap8gb(ns);
