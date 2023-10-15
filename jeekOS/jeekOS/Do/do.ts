@@ -1,4 +1,4 @@
-import { NS, Server, Player } from "@ns";
+import { NS, Server, Player, ResetInfo } from "@ns";
 
 // Hash function by @Insight from the Bitburner Discord
 export function hashCode(s: string): number {
@@ -36,7 +36,7 @@ function uniqueID(s: string, random = false): string {
 }
 
 // Writes a command to a file, runs it, and then returns the result
-export async function Do(ns: NS, command: string, ...args: (string|number)[]): Promise<string | number | null | Server | string[] | Player> { //FFIGNORE
+export async function Do(ns: NS, command: string, ...args: (string|number)[]): Promise<string | number | null | Server | string[] | Player | boolean | ResetInfo > { //FFIGNORE
 	let progname = "/temp/proc-" + uniqueID(command);
 	writeIfNotSame(ns, progname + ".js", `export async function main(ns) { ns.writePort(ns.pid, JSON.stringify(` + command + `(...JSON.parse(ns.args[0])) ?? "UnDeFiNeDaF"), 'w'); }`);
 	let pid = ns.run(progname + ".js", 1, JSON.stringify(args));
@@ -47,12 +47,12 @@ export async function Do(ns: NS, command: string, ...args: (string|number)[]): P
     	pid = ns.run(progname + ".js", 1, JSON.stringify(args));
 	}
 	await ns.getPortHandle(pid).nextWrite();
-	let answer: string | number | null | Server | string[] | Player = JSON.parse(ns.readPort(pid).toString());
+	let answer: string | number | null | Server | string[] | Player | boolean | ResetInfo = JSON.parse(ns.readPort(pid).toString());
 	return answer === "UnDeFiNeDaF" ? null : answer;
 }
 
 // Writes a command to a file, runs it, and then returns the result
-export async function DoMore(ns: NS, threads: number, command: string, ...args: (string|number)[]): Promise<string | number | null | Server | string[] | Player> { //FFIGNORE
+export async function DoMore(ns: NS, threads: number, command: string, ...args: (string|number)[]): Promise<string | number | null | Server | string[] | Player | boolean> { //FFIGNORE
 	let progname = "/temp/proc-" + uniqueID(command);
 	writeIfNotSame(ns, progname + ".js", `export async function main(ns) { ns.writePort(ns.pid, JSON.stringify(` + command + `(...JSON.parse(ns.args[0])) ?? "UnDeFiNeDaF"), 'w'); }`);
 	let pid = ns.run(progname + ".js", threads, JSON.stringify(args));
@@ -63,6 +63,6 @@ export async function DoMore(ns: NS, threads: number, command: string, ...args: 
     	pid = ns.run(progname + ".js", threads, JSON.stringify(args));
 	}
 	await ns.getPortHandle(pid).nextWrite();
-	let answer: string | number | null | Server | string[] | Player = JSON.parse(ns.readPort(pid).toString());
+	let answer: string | number | null | Server | string[] | Player | boolean = JSON.parse(ns.readPort(pid).toString());
 	return answer === "UnDeFiNeDaF" ? null : answer;
 }

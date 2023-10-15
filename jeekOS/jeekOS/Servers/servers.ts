@@ -31,6 +31,8 @@ export class Servers {
     }
 
     async popall() {
+        this.initialized = false;
+        this.initialize();
         while (this.initialized == false) {
             await this.ns.asleep(100);
         }
