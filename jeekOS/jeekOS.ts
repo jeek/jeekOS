@@ -2,7 +2,7 @@ import { NS } from "@ns";
 import { Do } from "jeekOS/Do/do";
 import { bootstrap8gb } from "jeekOS/Bootstrap/bootstrap8gb";
 import { Servers } from "jeekOS/Servers/servers";
-import { GetPrograms } from "jeekOS/Darkweb/Programs";
+import { GetPrograms } from "jeekOS/Darkweb/getPrograms";
 import { purchasedservers } from "jeekOS/PurchasedServers/purchasedservers";
 
 export async function main(ns: NS): Promise<void> {
