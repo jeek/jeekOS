@@ -39,7 +39,7 @@ export async function bootstrap8gb(ns: NS): Promise<void> {
             for (let server of targets.servers) {
                 if (server.name != "home") {
                     if (await Do(ns, "ns.hasRootAccess", server.name)) {
-                        await Do(ns, "ns.scp", "/temp/weaken.js", server.name, "home");
+                        await Do(ns , "ns.scp", "/temp/weaken.js", server.name, "home");
                         await Do(ns, "ns.scp", "/temp/grow.js", server.name, "home");
                     }
                     let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", server.name) as number) - (await Do(ns, "ns.getServerUsedRam", server.name) as number))! / 1.75);
@@ -52,7 +52,7 @@ export async function bootstrap8gb(ns: NS): Promise<void> {
             if (threads > 0) {
                 await DoMore(ns, threads, "await ns.weaken", target);
             }
-        } else {
+        } else { 
             if ((await Do(ns, "ns.getServerMoneyAvailable", target))! < (await Do(ns, "ns.getServerMaxMoney", target))!) {
                 for (let server of targets.servers) {
                     if (server.name != "home") {
