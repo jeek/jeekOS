@@ -3,7 +3,7 @@ import { Do, DoMore } from "jeekOS/Do/do";
 import { SimpleServer } from "jeekOS/Server/simpleserver";
 import { Servers } from "jeekOS/Servers/servers";
 
-export async function purchasedservers(ns: NS): Promise<void> {
+export async function purchasedServersHandler(ns: NS): Promise<void> {
     while (true) {
 
         const resetInfo = (await Do(ns, "ns.getResetInfo")) as ResetInfo;

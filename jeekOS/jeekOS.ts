@@ -1,18 +1,9 @@
 import { NS } from "@ns";
-import { Do } from "jeekOS/Do/do";
-import { bootstrap8gb } from "jeekOS/Bootstrap/bootstrap8gb";
-import { Servers } from "jeekOS/Servers/servers";
-import { GetPrograms } from "jeekOS/Darkweb/getPrograms";
-import { purchasedservers } from "jeekOS/PurchasedServers/purchasedservers";
+import { WholeGame } from "jeekOS/WholeGame/WholeGame";
 
 export async function main(ns: NS): Promise<void> {
-    let servers = new Servers(ns);
-    await servers.popall();
-    servers.popallloop();
-    purchasedservers(ns);
-    GetPrograms(ns);
-    while (true) {
-        await bootstrap8gb(ns);
-        await ns.asleep(0);
+    let Game = new WholeGame(ns);
+    while (Game.running) {
+        await ns.asleep(1000);
     }
 }

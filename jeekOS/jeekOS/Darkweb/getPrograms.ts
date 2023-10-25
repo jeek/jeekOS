@@ -1,7 +1,7 @@
 import { NS } from "@ns";
 import { Do } from "jeekOS/Do/do";
 
-export async function GetPrograms(ns: NS) {
+export async function getPrograms(ns: NS) {
     while (((await Do(ns, "ns.singularity.getDarkwebPrograms"))! as string[]).length == 0) {
         if (200000 <= (await Do(ns, "ns.getServerMoneyAvailable", "home"))!) {
             await Do(ns, "ns.singularity.purchaseTor");
