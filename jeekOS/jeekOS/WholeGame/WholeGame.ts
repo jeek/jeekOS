@@ -19,13 +19,16 @@ export class WholeGame {
 	}
 
     async start() {
-        while (!this.servers.initialized) {
+        while (false == this.servers.initialized) {
             await this.ns.asleep(0);
         }
         await this.servers.popall();
         this.servers.popallloop();
         purchasedServersHandler(this.ns);
         getPrograms(this.ns);
-        bootstrap8gb(this.ns);
+        while (true) {
+            await bootstrap8gb(this.ns);
+            await this.ns.asleep(0);
+        }
     }
 }
