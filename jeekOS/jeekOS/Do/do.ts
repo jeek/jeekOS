@@ -53,7 +53,7 @@ export async function Do(ns: NS, command: string, ...args: (string|number)[]): P
 
 // Writes a command to a file, runs it, and then returns the result
 export async function DoMore(ns: NS, threads: number, command: string, ...args: (string|number)[]): Promise<string | number | null | Server | string[] | Player | boolean> { //FFIGNORE
-	let progname = "/temp/proc-" + uniqueID(command);
+	let progname = "/temp/procM-" + uniqueID(command);
 	writeIfNotSame(ns, progname + ".js", `export async function main(ns) { ns.writePort(ns.pid, JSON.stringify(` + command + `(...JSON.parse(ns.args[0])) ?? "UnDeFiNeDaF"), 'w'); }`);
 	let pid = ns.run(progname + ".js", threads, JSON.stringify(args));
 	let z = -1;
