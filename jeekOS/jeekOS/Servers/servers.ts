@@ -1,14 +1,17 @@
 import { NS, Server } from "@ns";
 import { Do } from "jeekOS/Do/do";
+import { WholeGame } from "jeekOS/WholeGame/WholeGame";
 import { SimpleServer } from "jeekOS/Server/simpleserver";
 
 export class Servers {
     initialized: boolean;
     ns: NS;
+    Game: WholeGame;
     servers: SimpleServer[];
 
-    constructor(ns: NS) {
-        this.ns = ns;
+    constructor(game: WholeGame) {
+        this.Game = game;
+        this.ns = this.Game.ns;
         this.initialized = false;
         this.initialize();
         this.servers = [];

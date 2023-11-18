@@ -15,7 +15,8 @@ export async function getPrograms(ns: NS) {
         "FTPCrack.exe",
         "relaySMTP.exe",
         "HTTPWorm.exe",
-        "SQLInject.exe"]) {
+        "SQLInject.exe",
+        "Formulas.exe"]) {
             while (!((await Do(ns, "ns.ls", "home")!)! as string[]).includes(program)) {
                 if ((await Do(ns, "ns.singularity.getDarkwebProgramCost", program))! <= (await Do(ns, "ns.getServerMoneyAvailable", "home"))!) {
                     await Do(ns, "ns.singularity.purchaseProgram", program);

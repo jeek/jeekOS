@@ -1,11 +1,12 @@
 import { NS, Player, Server, ResetInfo } from "@ns";
-import { Do, DoMore } from "jeekOS/Do/do";
-import { SimpleServer } from "jeekOS/Server/simpleserver";
-import { Servers } from "jeekOS/Servers/servers";
-
-export async function purchasedServersHandler(ns: NS): Promise<void> {
+import { Do } from "jeekOS/Do/do";
+import { WholeGame } from "jeekOS/WholeGame/WholeGame";
+export async function purchasedServersHandler(Game: WholeGame): Promise<void> {
+    let ns = Game.ns;
     while (true) {
-
+        if (Game.growCount < 2) {
+            await ns.asleep(1000);
+        } else {
         const resetInfo = (await Do(ns, "ns.getResetInfo")) as ResetInfo;
         const lastAugReset = resetInfo.lastAugReset;
         let lastAug = (Date.now() - lastAugReset) / 3600000;
@@ -50,5 +51,7 @@ export async function purchasedServersHandler(ns: NS): Promise<void> {
         if (!didsomething) {
             await ns.asleep(60000);
         }
+        await ns.asleep(0);
     }
+}
 }

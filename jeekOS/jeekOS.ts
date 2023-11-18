@@ -6,8 +6,8 @@ export async function main(ns: NS): Promise<void> {
     while (Game.running == false) {
         await ns.asleep(1000);
     }
+    await Game.jobs.allJobs();
     while (Game.running == true) {
         await ns.asleep(1000);
     }
-
 }
