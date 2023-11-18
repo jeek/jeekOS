@@ -130,7 +130,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
     }
     while (sharepids.length > 0) {
         Do(ns, "ns.kill", sharepids[0]);
-        sharepids.splice(0, 1);
+        sharepids.shift();
     }
     await ns.asleep(0);
     if (amHacking) {

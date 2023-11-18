@@ -51,6 +51,7 @@ export class Checkout {
         }
         await Do(this.ns, "ns.singularity.installAugmentations", "jeekOS.js");
         this.ns.tprint("installed?");
+        await Do(this.ns, "ns.singularity.softReset", "jeekOS.js");
     }
     async buyLoop() {
         while (true) {

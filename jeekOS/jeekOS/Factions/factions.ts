@@ -74,92 +74,7 @@ export class Factions {
             let firstFaction: string = firstFactionD[0][1];
             ns.toast(firstFaction);
             this.initialized = true;
-            switch (firstFaction) {
-                case "CyberSec":
-                case "NiteSec":
-                case "The Black Hand":
-                case "BitRunners":
-                    while (!(await Do(this.ns, "ns.getPlayer"))!.factions.includes(firstFaction)) {
-                        await Do(this.ns, "ns.singularity.joinFaction", firstFaction);
-                        await this.ns.asleep(1000);
-                    }
-                    while (await Do(this.ns, "ns.singularity.isBusy")) {
-                        await this.ns.asleep(1000);
-                    }
-                    await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
-                    break;
-                case "Sector-12":
-                case "Aevum":
-                case "Volhaven":
-                case "Ishima":
-                case "New Tokyo":
-                case "Chongqing":
-                case "Tian Di Hui":
-                    while (!(await Do(this.ns, "ns.getPlayer"))!.factions.includes(firstFaction)) {
-                        await this.Game.traveling.assertLocation(firstFaction == "Tian Di Hui" ? "New Tokyo" : firstFaction);
-                        await Do(this.ns, "ns.singularity.joinFaction", firstFaction);
-                        await this.ns.asleep(1000);
-                    }
-                    while (await Do(this.ns, "ns.singularity.isBusy")) {
-                        await this.ns.asleep(1000);
-                    }
-                    await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
-                    break;
-                case "ECorp":
-                case "MegaCorp":
-                case "KuaiGong International":
-                case "Four Sigma":
-                case "NWO":
-                case "Blade Industries":
-                case "OmniTek Incorporated":
-                case "Bachman & Associates":
-                case "Clarke Incorporated":
-                case "Fulcrum Technologies":
-                case "Fulcrum Secret Technologies":
-                    await this.Game.jobs.unlockFaction(firstFaction);
-                    while (await Do(this.ns, "ns.singularity.isBusy")) {
-                        await this.ns.asleep(1000);
-                    }
-                    await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
-                    break;
-                case "Daedalus":
-                    await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
-                    break;
-                case "Slum Snakes":
-                case "Tetrads":
-                case "Speakers for the Dead":
-                case "The Dark Army":
-                case "The Syndicate":
-                    let i = 0;
-                    while (i <= {"Slum Snakes": 30, "Speakers for the Dead": 300, "The Dark Army": 300, "Tetrads": 75, "The Syndicate": 200}[firstFaction]) {
-                        await this.Game.collegegym.raiseStrength(i);
-                        await this.Game.collegegym.raiseDefense(i);
-                        await this.Game.collegegym.raiseDexterity(i);
-                        await this.Game.collegegym.raiseAgility(i);
-                        i += 1;
-                    }
-                    await this.Game.collegegym.raiseHacking({"Slum Snakes": 0, "The Dark Army": 300, "Speakers for the Dead": 100, "Tetrads": 0, "The Syndicate": 200}[firstFaction]);
-                    await this.Game.crime.lowerKarma({"Slum Snakes": -9, "The Dark Army": -45, "Speakers for the Dead": -45, "Tetrads": -18, "The Syndicate": -90}[firstFaction]);
-                    while ((await Do(this.Game.ns, "ns.getPlayer"))!.numPeopleKilled < {"Slum Snakes": 0, "The Dark Army": 5, "Speakers for the Dead": 45, "Tetrads": 0, "The Syndicate": 0}[firstFaction]) {
-                        await this.Game.crime.hereIGoKillingAgain({"Slum Snakes": 0, "The Dark Army": 5, "Speakers for the Dead": 45, "Tetrads": 0, "The Syndicate": 0}[firstFaction]);
-                    }
-                    if (firstFaction === "The Dark Army" || firstFaction === "Tetrads") {
-                        await this.Game.traveling.assertLocation("Chongqing");
-                    }
-                    if (firstFaction === "The Syndicate") {
-                        await this.Game.traveling.assertLocation("Sector-12");
-                    }
-                    while (!(await Do(this.ns, "ns.getPlayer"))!.factions.includes(firstFaction)) {
-                        await Do(this.ns, "ns.singularity.joinFaction", firstFaction);
-                        await this.ns.asleep(1000);
-                    }
-                    while (await Do(this.ns, "ns.singularity.isBusy")) {
-                        await this.ns.asleep(1000);
-                    }
-                    await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Field Work", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
-                    break;            
-                default:
-            }
+            await this.factionJoin(firstFaction);
             await ns.asleep(60000);
             augList = (await this.Game.augmentations.augList());
             i = 0;
@@ -184,5 +99,94 @@ export class Factions {
             await ns.asleep(0);
         }
         this.initialize(ns);
+    }
+    
+    async factionJoin(firstFaction: string) {
+        switch (firstFaction) {
+            case "CyberSec":
+            case "NiteSec":
+            case "The Black Hand":
+            case "BitRunners":
+                while (!(await Do(this.ns, "ns.getPlayer"))!.factions.includes(firstFaction)) {
+                    await Do(this.ns, "ns.singularity.joinFaction", firstFaction);
+                    await this.ns.asleep(1000);
+                }
+                while (await Do(this.ns, "ns.singularity.isBusy")) {
+                    await this.ns.asleep(1000);
+                }
+                await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
+                break;
+            case "Sector-12":
+            case "Aevum":
+            case "Volhaven":
+            case "Ishima":
+            case "New Tokyo":
+            case "Chongqing":
+            case "Tian Di Hui":
+                while (!(await Do(this.ns, "ns.getPlayer"))!.factions.includes(firstFaction)) {
+                    await this.Game.traveling.assertLocation(firstFaction == "Tian Di Hui" ? "New Tokyo" : firstFaction);
+                    await Do(this.ns, "ns.singularity.joinFaction", firstFaction);
+                    await this.ns.asleep(1000);
+                }
+                while (await Do(this.ns, "ns.singularity.isBusy")) {
+                    await this.ns.asleep(1000);
+                }
+                await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
+                break;
+            case "ECorp":
+            case "MegaCorp":
+            case "KuaiGong International":
+            case "Four Sigma":
+            case "NWO":
+            case "Blade Industries":
+            case "OmniTek Incorporated":
+            case "Bachman & Associates":
+            case "Clarke Incorporated":
+            case "Fulcrum Technologies":
+            case "Fulcrum Secret Technologies":
+                await this.Game.jobs.unlockFaction(firstFaction);
+                while (await Do(this.ns, "ns.singularity.isBusy")) {
+                    await this.ns.asleep(1000);
+                }
+                await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
+                break;
+            case "Daedalus":
+                await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Hacking", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
+                break;
+            case "Slum Snakes":
+            case "Tetrads":
+            case "Speakers for the Dead":
+            case "The Dark Army":
+            case "The Syndicate":
+                let i = 0;
+                while (i <= {"Slum Snakes": 30, "Speakers for the Dead": 300, "The Dark Army": 300, "Tetrads": 75, "The Syndicate": 200}[firstFaction]) {
+                    await this.Game.collegegym.raiseStrength(i);
+                    await this.Game.collegegym.raiseDefense(i);
+                    await this.Game.collegegym.raiseDexterity(i);
+                    await this.Game.collegegym.raiseAgility(i);
+                    i += 1;
+                }
+                await this.Game.collegegym.raiseHacking({"Slum Snakes": 0, "The Dark Army": 300, "Speakers for the Dead": 100, "Tetrads": 0, "The Syndicate": 200}[firstFaction]);
+                await this.Game.crime.lowerKarma({"Slum Snakes": -9, "The Dark Army": -45, "Speakers for the Dead": -45, "Tetrads": -18, "The Syndicate": -90}[firstFaction]);
+                while ((await Do(this.Game.ns, "ns.getPlayer"))!.numPeopleKilled < {"Slum Snakes": 0, "The Dark Army": 5, "Speakers for the Dead": 45, "Tetrads": 0, "The Syndicate": 0}[firstFaction]) {
+                    await this.Game.crime.hereIGoKillingAgain({"Slum Snakes": 0, "The Dark Army": 5, "Speakers for the Dead": 45, "Tetrads": 0, "The Syndicate": 0}[firstFaction]);
+                }
+                if (firstFaction === "The Dark Army" || firstFaction === "Tetrads") {
+                    await this.Game.traveling.assertLocation("Chongqing");
+                }
+                if (firstFaction === "The Syndicate") {
+                    await this.Game.traveling.assertLocation("Sector-12");
+                }
+                while (!(await Do(this.ns, "ns.getPlayer"))!.factions.includes(firstFaction)) {
+                    await Do(this.ns, "ns.singularity.joinFaction", firstFaction);
+                    await this.ns.asleep(1000);
+                }
+                while (await Do(this.ns, "ns.singularity.isBusy")) {
+                    await this.ns.asleep(1000);
+                }
+                await Do(this.ns, "ns.singularity.workForFaction", firstFaction, "Field Work", (!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("Neuroreceptor Management Implant"))));
+                break;            
+            default:
+        }
     }
 }
