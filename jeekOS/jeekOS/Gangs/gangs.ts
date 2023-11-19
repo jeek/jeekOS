@@ -89,7 +89,7 @@ export class Gangs {
                     }    
                 }
             }
-            await this.ns.asleep(loopStop + 18000 - Date.now());
+            await this.ns.asleep(loopStop + 20500 - 500 * memberNames.length - Date.now());
 
             let members = await Do(this.ns, "ns.gang.getMemberNames");
             // Clash time
@@ -124,7 +124,7 @@ export class Gangs {
         members.sort((a:any, b:any) => { return memberData[a].str_mult - memberData[b].str_mult; });
         let funds = Math.min((await Do(this.ns, "ns.getMoneySources")).sinceInstall.gang, (await Do(this.ns, "ns.getPlayer"))!.funds);
         
-        if ((await Do(this.ns, "ns.fileExists", "SQLInject.exe")) || members.length < 12) {
+        if (members.length < 12 || (await Do(this.ns, "ns.fileExists", "SQLInject.exe"))) {
             let equip:string[] = await Do(this.ns, "ns.gang.getEquipmentNames");
             let equipCost:{[key:string]:number} = {};
             for (let x of Object.keys(equip)) {
