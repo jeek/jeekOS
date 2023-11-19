@@ -78,6 +78,9 @@ export class Augmentations {
                 }        
             }    
         }
+        if ((await Do(this.ns, "ns.getResetInfo"))!.currentBitNode==2 && !((await Do(this.ns, "ns.singularity.getOwnedAugmentations"))!.includes("The Red Pill"))) {
+            factionList = factionList.concat([this.Game.gangToJoin]);
+        }
         if ((await Do(this.ns, "ns.getPlayer"))!.factions.includes("Daedalus")) {
             factionList = factionList.concat(["Daedalus"]);
         }

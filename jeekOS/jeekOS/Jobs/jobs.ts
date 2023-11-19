@@ -16,22 +16,24 @@ export class Jobs {
     async unlockFaction(company: string) {
         let ns: NS = this.ns;
         let jobs: any[] = [];
-        if ((await Do(this.ns, "ns.getPlayer"))!.city == "Sector-12") {
-          //await (this.Game.collegegym.raiseStrength(100 * (await Do(ns, "ns.getPlayer"))!.mults['strength']));
-          //await (this.Game.collegegym.raiseDefense(100 * (await Do(ns, "ns.getPlayer"))!.mults['defense']));
-          //await (this.Game.collegegym.raiseDexterity(100 * (await Do(ns, "ns.getPlayer"))!.mults['dexterity']));
-          //await (this.Game.collegegym.raiseAgility(100 * (await Do(ns, "ns.getPlayer"))!.mults['agility']));
-          await (this.Game.collegegym.raiseHacking(250));
-          await (this.Game.collegegym.raiseHacking(100 * (await Do(ns, "ns.getPlayer"))!.mults['hacking']));
-          await (this.Game.collegegym.raiseCharisma(100 * (await Do(ns, "ns.getPlayer"))!.mults['charisma']));
-        } else {
-          await (this.Game.collegegym.raiseHacking(250));
-          await (this.Game.collegegym.raiseHacking(100 * (await Do(ns, "ns.getPlayer"))!.mults['hacking']));
-          await (this.Game.collegegym.raiseCharisma(100 * (await Do(ns, "ns.getPlayer"))!.mults['charisma']));
-          //await (this.Game.collegegym.raiseStrength(100 * (await Do(ns, "ns.getPlayer"))!.mults['strength']));
-          //await (this.Game.collegegym.raiseDefense(100 * (await Do(ns, "ns.getPlayer"))!.mults['defense']));
-          //await (this.Game.collegegym.raiseDexterity(100 * (await Do(ns, "ns.getPlayer"))!.mults['dexterity']));
-          //await (this.Game.collegegym.raiseAgility(100 * (await Do(ns, "ns.getPlayer"))!.mults['agility']));
+        if (company != this.Game.gangToJoin) {
+          if ((await Do(this.ns, "ns.getPlayer"))!.city == "Sector-12") {
+            //await (this.Game.collegegym.raiseStrength(100 * (await Do(ns, "ns.getPlayer"))!.mults['strength']));
+            //await (this.Game.collegegym.raiseDefense(100 * (await Do(ns, "ns.getPlayer"))!.mults['defense']));
+            //await (this.Game.collegegym.raiseDexterity(100 * (await Do(ns, "ns.getPlayer"))!.mults['dexterity']));
+            //await (this.Game.collegegym.raiseAgility(100 * (await Do(ns, "ns.getPlayer"))!.mults['agility']));
+            await (this.Game.collegegym.raiseHacking(250));
+            await (this.Game.collegegym.raiseHacking(100 * (await Do(ns, "ns.getPlayer"))!.mults['hacking']));
+            await (this.Game.collegegym.raiseCharisma(100 * (await Do(ns, "ns.getPlayer"))!.mults['charisma']));
+          } else {
+            await (this.Game.collegegym.raiseHacking(250));
+            await (this.Game.collegegym.raiseHacking(100 * (await Do(ns, "ns.getPlayer"))!.mults['hacking']));
+            await (this.Game.collegegym.raiseCharisma(100 * (await Do(ns, "ns.getPlayer"))!.mults['charisma']));
+            //await (this.Game.collegegym.raiseStrength(100 * (await Do(ns, "ns.getPlayer"))!.mults['strength']));
+            //await (this.Game.collegegym.raiseDefense(100 * (await Do(ns, "ns.getPlayer"))!.mults['defense']));
+            //await (this.Game.collegegym.raiseDexterity(100 * (await Do(ns, "ns.getPlayer"))!.mults['dexterity']));
+            //await (this.Game.collegegym.raiseAgility(100 * (await Do(ns, "ns.getPlayer"))!.mults['agility']));
+          }
         }
         if (!(await Do(ns, "ns.getPlayer")).factions.includes(company == "Fulcrum Secret Techologies" ? "Fulcrum Technologies" : company)) {
         while (!(await Do(ns, "ns.getPlayer")).factions.includes(company == "Fulcrum Secret Techologies" ? "Fulcrum Technologies" : company)) {

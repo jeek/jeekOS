@@ -16,7 +16,6 @@ export class Factions {
         this.ns = this.Game.ns;
         this.initialized = false;
         this.augs = new Map<string, string[]>;
-        this.initialize(this.ns);
         for (let faction of FACTIONS) {
             if (!["Sector-12", "Aevum", "Ishima", "Chongqing", "Volhaven", "New Tokyo"].includes(faction)) {
                 this.eventuallyJoin(faction);
@@ -70,6 +69,9 @@ export class Factions {
             let firstFactionD: any = augList;
             while (firstFactionD[0][5] <= 0) {
                 firstFactionD = firstFactionD.filter((x:any) => x[2] != firstFactionD[0][2]);
+            }
+            if ((await Do(this.ns, "ns.getResetInfo"))!.currentNode == 2) {
+                firstFactionD = firstFactionD.filter((x:any) => x[1] != this.Game.gangToJoin);
             }
             let firstFaction: string = firstFactionD[0][1];
             ns.toast(firstFaction);
@@ -171,12 +173,28 @@ export class Factions {
                 while ((await Do(this.Game.ns, "ns.getPlayer"))!.numPeopleKilled < {"Slum Snakes": 0, "The Dark Army": 5, "Speakers for the Dead": 45, "Tetrads": 0, "The Syndicate": 0}[firstFaction]) {
                     await this.Game.crime.hereIGoKillingAgain({"Slum Snakes": 0, "The Dark Army": 5, "Speakers for the Dead": 45, "Tetrads": 0, "The Syndicate": 0}[firstFaction]);
                 }
+                await this.Game.crime.getMoney({
+                    "Slum Snakes": 1e6,
+                    "Tetrads": 0,
+                    "Silhouette": 15e6,
+                    "Speakers for the Dead": 0,
+                    "The Dark Army": 0,
+                    "The Syndicate": 10e6
+                }[firstFaction]);
                 if (firstFaction === "The Dark Army" || firstFaction === "Tetrads") {
                     await this.Game.traveling.assertLocation("Chongqing");
                 }
                 if (firstFaction === "The Syndicate") {
                     await this.Game.traveling.assertLocation("Sector-12");
                 }
+                await this.Game.crime.getMoney({
+                    "Slum Snakes": 1e6,
+                    "Tetrads": 0,
+                    "Silhouette": 15e6,
+                    "Speakers for the Dead": 0,
+                    "The Dark Army": 0,
+                    "The Syndicate": 10e6
+                }[firstFaction]);
                 while (!(await Do(this.ns, "ns.getPlayer"))!.factions.includes(firstFaction)) {
                     await Do(this.ns, "ns.singularity.joinFaction", firstFaction);
                     await this.ns.asleep(1000);
