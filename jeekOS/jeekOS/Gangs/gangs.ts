@@ -30,18 +30,22 @@ export class Gangs {
     async mainLoop() {
         let loopStop = Date.now();
         let taskNames = await Do(this.ns, "ns.gang.getTaskNames");
+        let didSomething = true;
+        while (didSomething) {
+            didSomething = false;
+            let filterMembers = (await Do(this.ns, "ns.gang.getMemberNames"));
+            filterMembers = this.Game.gangMemberNames.filter((x:string) => !filterMembers.includes(x));
+            let filterMembers2:string[] = (await Do(this.ns, "ns.gang.getMemberNames")).filter((x:any) => !(this.Game.gangMemberNames.includes(x))).filter((x:any) => !filterMembers.includes(x));
+            if (filterMembers2.length > 0) {
+                Do(this.ns, "ns.gang.renameMember", filterMembers2[Math.floor(filterMembers2.length * Math.random())], filterMembers[Math.floor(filterMembers.length * Math.random())]);
+                didSomething = true;
+            }
+        }
+
         while (true) {
             let filterMembers:string[] = (await Do(this.ns, "ns.gang.getMemberNames"));
             filterMembers = this.Game.gangMemberNames.filter((x:string) => !filterMembers.includes(x));
             while (await Do(this.ns, "ns.gang.recruitMember", filterMembers[Math.floor(Math.random() * filterMembers.length)])) {}
-            if (false) {
-                filterMembers = (await Do(this.ns, "ns.gang.getMemberNames"));
-                filterMembers = this.Game.gangMemberNames.filter((x:string) => !filterMembers.includes(x));
-                let filterMembers2:string[] = (await Do(this.ns, "ns.gang.getMemberNames")).filter((x:any) => !(this.Game.gangMemberNames.includes(x))).filter((x:any) => !filterMembers.includes(x));
-                if (filterMembers2.length > 0) {
-                    Do(this.ns, "ns.gang.renameMember", filterMembers2[Math.floor(filterMembers2.length * Math.random())], filterMembers[Math.floor(filterMembers.length * Math.random())]);
-                }
-            }
             let memberNames:string[] = (await Do(this.ns, "ns.gang.getMemberNames"));
             let memberData:{[key:string]: any} = {};
             for (let member of memberNames) {
