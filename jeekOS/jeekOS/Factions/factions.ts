@@ -32,6 +32,7 @@ export class Factions {
         }
     }
     async initialize(ns: NS) {
+        while (true) {
         this.initialized = false;
         while ((!((await Do(this.ns, "ns.singularity.getOwnedAugmentations", false))!.includes("The Red Pill"))) && (await this.Game.augmentations.augList()).length == 0) {
             this.initialized = true;
@@ -100,7 +101,7 @@ export class Factions {
             Do(this.ns, "ns.singularity.stopAction");
             await ns.asleep(0);
         }
-        this.initialize(ns);
+    }
     }
     
     async factionJoin(firstFaction: string) {

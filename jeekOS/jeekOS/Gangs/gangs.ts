@@ -45,7 +45,7 @@ export class Gangs {
         while (true) {
             let filterMembers:string[] = (await Do(this.ns, "ns.gang.getMemberNames"));
             filterMembers = this.Game.gangMemberNames.filter((x:string) => !filterMembers.includes(x));
-            while (await Do(this.ns, "ns.gang.recruitMember", filterMembers[Math.floor(Math.random() * filterMembers.length)])) {}
+            while (filterMembers.length > 0 && await Do(this.ns, "ns.gang.recruitMember", filterMembers[Math.floor(Math.random() * filterMembers.length)])) {}
             let memberNames:string[] = (await Do(this.ns, "ns.gang.getMemberNames"));
             let memberData:{[key:string]: any} = {};
             for (let member of memberNames) {
@@ -66,10 +66,17 @@ export class Gangs {
             for (let task of taskNames) {
                 tD[task] = await Do(this.ns, "ns.gang.getTaskStats", task);
             }
-            for (let member of readyToEarn) {
-                let mD = await Do(this.ns, "ns.gang.getMemberInformation", member);
-                for (let task of taskNames) {
-                    letsDoThis.push([member, task, this.ns.formulas.gang.respectGain(genInfo, mD, tD[task]), this.ns.formulas.gang.moneyGain(genInfo, mD, tD[task])]);
+            let gI = await Do(this.ns, "ns.gang.getGangInformation");
+            if (gI.wantedLevel >= 10 && gI.wantedPenalty <= .9) {
+                for (let member of readyToEarn) {
+                    letsDoThis.push([member, "Vigilante Justice", 0, 0]);
+                }
+            } else {
+                for (let member of readyToEarn) {
+                    let mD = await Do(this.ns, "ns.gang.getMemberInformation", member);
+                    for (let task of taskNames) {
+                        letsDoThis.push([member, task, this.ns.formulas.gang.respectGain(genInfo, mD, tD[task]), this.ns.formulas.gang.moneyGain(genInfo, mD, tD[task])]);
+                    }
                 }
             }
             try {
@@ -94,13 +101,12 @@ export class Gangs {
                 }
             }
             await this.ns.asleep(loopStop + 20500 - 500 * memberNames.length - Date.now());
-
+            let startPower = (await Do(this.ns, "ns.gang.getGangInformation"))!.power;
             let members = await Do(this.ns, "ns.gang.getMemberNames");
             // Clash time
             (await members).map((x:any) => Do(this.ns, "ns.gang.setMemberTask", x, "Territory Warfare"));
     
             let othergangs = await Do(this.ns, "ns.gang.getOtherGangInformation");
-            let startPower = (await Do(this.ns, "ns.gang.getGangInformation"))!.power;
             if (Object.keys(othergangs).filter(x => othergangs[x].territory > 0).length > 0) {
                 let chances:{[key:string]:number} = {}
                 for (let other of Object.keys(othergangs)) {
@@ -108,7 +114,7 @@ export class Gangs {
                         chances[other] = await Do(this.ns, "ns.gang.getChanceToWinClash", other);
                     }
                 }
-                let total = Object.keys(othergangs).map(x => chances[x] * othergangs[x].territory).reduce((a, b) => a + b);
+                let total = Object.keys(chances).map(x => chances[x] * othergangs[x].territory).reduce((a, b) => a + b);
                 if ((total / (1 - (await Do(this.ns, "ns.gang.getGangInformation")).territory) >= this.clashTarget) || (Object.keys(chances).every(x => chances[x] >= this.clashTarget)))
                     Do(this.ns, "ns.gang.setTerritoryWarfare", true);
     
@@ -124,32 +130,32 @@ export class Gangs {
     }
     async getGear(memberData:{[key:string]:any}) {
         let members:string[] = Object.keys(memberData);
-        // Buy equipment, but only if SQLInject.exe exists or the gang has under 12 people
         members.sort((a:any, b:any) => { return memberData[a].str_mult - memberData[b].str_mult; });
-        let funds = Math.min((await Do(this.ns, "ns.getMoneySources")).sinceInstall.gang, (await Do(this.ns, "ns.getPlayer"))!.funds);
-        
+
+        let funds = Math.min((await Do(this.ns, "ns.getMoneySources")).sinceInstall.gang, (await Do(this.ns, "ns.getPlayer"))!.money);
+
+        let discount = 1;
+        // Buy equipment, but only if SQLInject.exe exists or the gang has under 12 people
         if (members.length < 12 || (await Do(this.ns, "ns.fileExists", "SQLInject.exe"))) {
             let equip:string[] = await Do(this.ns, "ns.gang.getEquipmentNames");
             let equipCost:{[key:string]:number} = {};
-            for (let x of Object.keys(equip)) {
+            for (let x of equip) {
                 equipCost[x] = await Do(this.ns, "ns.gang.getEquipmentCost", x);
             }
-            equip.sort((a:any, b:any) => equipCost[b] - equipCost[a]);
+            equip = equip.sort((a:any, b:any) => equipCost[b] - equipCost[a]);
             for (let j = 0; j < equip.length; j++) {
                 for (let i of members) {
                     let total = Math.min(memberData[i].str, memberData[i].dex, memberData[i].def, memberData[i].cha, memberData[i]['hack']);
                     // Buy the good stuff only once the terrorism stats are over 700.
-                    if (total >= 140) {
-                        if ((await (equipCost[equip[j]])) < funds) {
-                            if (await Do(this.ns, "ns.gang.purchaseEquipment", i, equip[j])) {
-                                this.ns.toast(i + " now owns " + equip[j]);
-                                funds -= equipCost[equip[j]];
-                                memberData[i] = await Do(this.ns, "ns.gang.getMemberInformation", i);
-                            }
-                        }
+                    if ((total >= 140 || members.length < 12) && (equipCost[equip[j]] < funds/discount) && (await Do(this.ns, "ns.gang.purchaseEquipment", i, equip[j]))) {
+                        this.ns.toast(i + " now owns " + equip[j]);
+                        funds -= equipCost[equip[j]]/discount;
+                        memberData[i] = await Do(this.ns, "ns.gang.getMemberInformation", i);
                     } else {
                         if (await Do(this.ns, "ns.gang.purchaseEquipment",i, "Glock 18C")) {
                             this.ns.toast(i + " now owns Glock 18C");
+                            funds -= equipCost["Glock 18C"]/discount;
+                            memberData[i] = await Do(this.ns, "ns.gang.getMemberInformation", i);
                         }
                     }
                 }
@@ -162,9 +168,9 @@ export class Gangs {
         for (let member of members) {
             memberData[member] = await Do(this.ns, "ns.gang.getMemberInformation", member);
         }
-        if (members.length < 12) {
-            return;
-        }
+//        if (members.length < 12) {
+//            return;
+//        }
         let gangInfo = await Do(this.ns, "ns.gang.getGangInformation");
         let avgrespect = members.map((x:any) => memberData[x].earnedRespect).reduce((a:any, b:any) => a + b, 0) / members.length;
         if (avgrespect >= 0) {
