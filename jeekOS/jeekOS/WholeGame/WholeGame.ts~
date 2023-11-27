@@ -111,23 +111,10 @@ export class WholeGame {
         try {
           let doc = eval('document');
           let modal = doc.evaluate("//div[contains(@class,'MuiBackdrop-root')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-          if (modal.innerHTML.includes("you feel different")) {
-          modal[Object.keys(modal)[1]].onClick({ isTrusted: true });
-        } } catch { }
-        try {
-          let doc = eval('document');
-          let modal = doc.evaluate("//div[contains(@class,'MuiBackdrop-root')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-          if (modal.innerHTML.includes("for destroying its corresponding")) {
+          if (modal.innerHTML.includes("you feel different") || modal.innerHTML.includes("for destroying its corresponding")) {
           modal[Object.keys(modal)[1]].onClick({ isTrusted: true });
         } } catch { }
         await ns.asleep(10000);
-        try {
-            let doc = eval('document');
-            let modal = doc.evaluate("//div[contains(@class,'MuiBackdrop-root')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-            if (modal.innerHTML.includes("destroying a BitNode")) {
-            modal[Object.keys(modal)[1]].onClick({ isTrusted: true });
-          } } catch { }
-          await ns.asleep(10000);  
-    }
+       }
     }
 }

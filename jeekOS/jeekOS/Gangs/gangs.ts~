@@ -31,7 +31,6 @@ export class Gangs {
         let loopStop = Date.now();
         let taskNames = await Do(this.ns, "ns.gang.getTaskNames");
         let didSomething = true;
-
         let z = 0;
         while (z < 20 && didSomething) {
             z += 1;

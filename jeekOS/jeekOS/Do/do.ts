@@ -37,14 +37,16 @@ function uniqueID(s: string, random = false): string {
 
 // Writes a command to a file, runs it, and then returns the result
 export async function Do(ns: NS, command: string, ...args: (string|number|boolean)[]): Promise< any > { //FFIGNORE
-	let progname = "/temp/proc-" + uniqueID(command);
-	writeIfNotSame(ns, progname + ".js", `export async function main(ns) { let output = JSON.stringify(` + command + `(...JSON.parse(ns.args[0])) ?? "UnDeFiNeDaF"); ns.atExit(() => ns.writePort(ns.pid, output)); }`);
-	let pid = ns.run(progname + ".js", 1, JSON.stringify(args));
+	let progname = "/temp/Do.js";
+	let commandy = command.replace("await ", "").replace("ns.", "");
+
+	writeIfNotSame(ns, "/temp/Do.js", `export async function main(ns) { let output = JSON.stringify(await (` + `eval("ns." + ns.args[0])(...JSON.parse(ns.args[1]))) ?? "UnDeFiNeDaF"); ns.atExit(() => ns.writePort(ns.pid, output)); }`);
+	let pid = ns.run("/temp/Do.js", {"ramOverride":1.6+ns.getFunctionRamCost(commandy), "threads": 1}, commandy, JSON.stringify(args));
 	let z = -1;
 	while (0 == pid) {
 		z += 1;
 		await ns.asleep(z);
-    	pid = ns.run(progname + ".js", 1, JSON.stringify(args));
+		pid = ns.run("/temp/Do.js", {"ramOverride":1.6+ns.getFunctionRamCost(commandy), "threads": 1}, commandy, JSON.stringify(args));
 	}
 	await ns.getPortHandle(pid).nextWrite();
 	let answer: any = JSON.parse(ns.readPort(pid).toString());
@@ -53,14 +55,16 @@ export async function Do(ns: NS, command: string, ...args: (string|number|boolea
 
 // Writes a command to a file, runs it, and then returns the result
 export async function DoMore(ns: NS, threads: number, command: string, ...args: (string|number)[]): Promise<string | number | null | Server | string[] | Player | boolean> { //FFIGNORE
-	let progname = "/temp/procM-" + uniqueID(command);
-	writeIfNotSame(ns, progname + ".js", `export async function main(ns) { let output = JSON.stringify(` + command + `(...JSON.parse(ns.args[0])) ?? "UnDeFiNeDaF"); ns.atExit(() => ns.writePort(ns.pid, output)); }`);
-	let pid = ns.run(progname + ".js", threads, JSON.stringify(args));
+	let progname = "/temp/Do.js";
+	let commandy = command.replace("await ", "").replace("ns.", "");
+
+	writeIfNotSame(ns, "/temp/Do.js", `export async function main(ns) { let output = JSON.stringify(await (` + `eval("ns." + ns.args[0])(...JSON.parse(ns.args[1]))) ?? "UnDeFiNeDaF"); ns.atExit(() => ns.writePort(ns.pid, output)); }`);
+	let pid = ns.run("/temp/Do.js", {"ramOverride":1.6+ns.getFunctionRamCost(commandy), "threads": threads}, commandy, JSON.stringify(args));
 	let z = -1;
 	while (0 == pid) {
 		z += 1;
 		await ns.asleep(z);
-    	pid = ns.run(progname + ".js", threads, JSON.stringify(args));
+		pid = ns.run("/temp/Do.js", {"ramOverride":1.6+ns.getFunctionRamCost(commandy), "threads": threads}, commandy, JSON.stringify(args));
 	}
 	await ns.getPortHandle(pid).nextWrite();
 	let answer: any = JSON.parse(ns.readPort(pid).toString());

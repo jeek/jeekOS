@@ -78,7 +78,7 @@ export class Factions {
             }
             if (augList.length > 0) {
             let firstFactionD: any = augList;
-//            ns.tprint(firstFactionD);
+            ns.tprint(firstFactionD);
             while (firstFactionD[0][5] <= 0) {
                 firstFactionD = firstFactionD.filter((x:any) => x[2] != firstFactionD[0][2]);
             }
