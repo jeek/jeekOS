@@ -59,7 +59,7 @@ export class Focus {
                         }
                         if (servers[i] == "w0r1d_d43m0n") {
                             this.ns.toast("Goodbye.");
-                            await Do(this.ns, "ns.singularity.destroyW0r1dD43m0n", 2, "jeekOS.js");
+                            await Do(this.ns, "ns.singularity.destroyW0r1dD43m0n", 3, "jeekOS.js");
                         } else {
                             await Do(this.ns, "await ns.singularity.installBackdoor");
                         }

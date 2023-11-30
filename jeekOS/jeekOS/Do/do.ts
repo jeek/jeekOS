@@ -39,14 +39,19 @@ function uniqueID(s: string, random = false): string {
 export async function Do(ns: NS, command: string, ...args: (string|number|boolean)[]): Promise< any > { //FFIGNORE
 	let progname = "/temp/Do.js";
 	let commandy = command.replace("await ", "").replace("ns.", "");
+    let memory = 1.6;
+	try {
+		memory = 1.6 + ns.getFunctionRamCost(commandy);
+	} catch {
 
+	}
 	writeIfNotSame(ns, "/temp/Do.js", `export async function main(ns) { let output = JSON.stringify(await (` + `eval("ns." + ns.args[0])(...JSON.parse(ns.args[1]))) ?? "UnDeFiNeDaF"); ns.atExit(() => ns.writePort(ns.pid, output)); }`);
-	let pid = ns.run("/temp/Do.js", {"ramOverride":1.6+ns.getFunctionRamCost(commandy), "threads": 1}, commandy, JSON.stringify(args));
+	let pid = ns.run("/temp/Do.js", {"ramOverride":memory, "threads": 1}, commandy, JSON.stringify(args));
 	let z = -1;
 	while (0 == pid) {
 		z += 1;
 		await ns.asleep(z);
-		pid = ns.run("/temp/Do.js", {"ramOverride":1.6+ns.getFunctionRamCost(commandy), "threads": 1}, commandy, JSON.stringify(args));
+		pid = ns.run("/temp/Do.js", {"ramOverride":memory, "threads": 1}, commandy, JSON.stringify(args));
 	}
 	await ns.getPortHandle(pid).nextWrite();
 	let answer: any = JSON.parse(ns.readPort(pid).toString());

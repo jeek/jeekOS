@@ -47,7 +47,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
                 }
                 let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", server.name) as number) - (await Do(ns, "ns.getServerUsedRam", server.name) as number))! / 1.75);
                 if (server.name == "home") {
-                    threads -= 5;
+                    threads -= 21;
                 }
                 if (threads > 0) {
                     pids = pids.concat((await Do(ns, "ns.exec", "/temp/weaken.js", server.name, threads, target)) as number);
@@ -55,7 +55,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
             }
         }
         let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", "home") as number)! - ((await Do(ns, "ns.getServerUsedRam", "home")) as number))! / 1.75);
-        threads -= 5;
+        threads -= 21;
         if (threads > 0) {
             await DoMore(ns, threads, "await ns.weaken", target);
         }
@@ -69,7 +69,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
                     }
                     let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", server.name) as number) - (await Do(ns, "ns.getServerUsedRam", server.name) as number))! / 1.75);
                     if (server.name == "home") {
-                        threads -= 5;
+                        threads -= 21;
                     }
                     if (threads > 0) {
                         pids = pids.concat((await Do(ns, "ns.exec", "/temp/grow.js", server.name, threads, target)) as number);
@@ -78,7 +78,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
             }
             await ns.asleep(0);
             let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", "home") as number)! - ((await Do(ns, "ns.getServerUsedRam", "home")) as number))! / 1.75);
-            threads -= 5;
+            threads -= 21;
             if (threads > 0) {
                 await DoMore(ns, threads, "await ns.grow", target);
             }
@@ -89,7 +89,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
                 if (server.name != "home") {
                     if (await Do(ns, "ns.hasRootAccess", server.name)) {
                         await Do(ns, "ns.scp", "/temp/hack.js", server.name, "home");
-                        if (((await Do(ns, "ns.getServerMaxRam", best))! - (await Do(ns, "ns.getServerUsedRam", best))!) <((await Do(ns, "ns.getServerMaxRam", server.name))! - (await Do(ns, "ns.getServerUsedRam", server.name))!)) {
+                        if (((await Do(ns, "ns.getServerMaxRam", best))! - (await Do(ns, "ns.getServerUsedRam", best))!) - (best == "home" ? 21 * 1.85 : 0) <((await Do(ns, "ns.getServerMaxRam", server.name))! - (await Do(ns, "ns.getServerUsedRam", server.name))!)) {
                             best = server.name;
                         }
                     }
@@ -98,7 +98,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
             ns.tprint("Hacking from " + best);
             let threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", best) as number) - (await Do(ns, "ns.getServerUsedRam", best) as number))! / 1.75);
             if (best == "home") {
-                threads -= 5;
+                threads -= 21;
             }
             if (threads > 0) {
                 pids = pids.concat((await Do(ns, "ns.exec", "/temp/hack.js", best, threads, target)) as number);
@@ -109,7 +109,7 @@ export async function bootstrap8gb(Game: WholeGame): Promise<void> {
                         await Do(ns, "ns.scp", "/temp/share.js", server.name, "home");
                         threads = Math.floor(((await Do(ns, "ns.getServerMaxRam", server.name) as number) - (await Do(ns, "ns.getServerUsedRam", server.name) as number))! / 4);
                         if (server.name == "home") {
-                            threads -= 5;
+                            threads -= 21;
                         }
                         if (threads > 0) {
                             sharepids = sharepids.concat((await Do(ns, "ns.exec", "/temp/share.js", server.name, threads, target)) as number);
