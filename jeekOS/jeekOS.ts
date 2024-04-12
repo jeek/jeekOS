@@ -3,7 +3,7 @@ import { WholeGame } from "jeekOS/WholeGame";
 import { getTruePlayer } from "jeekOS/TruePlayer";
 import { Do } from "jeekOS/Do";
 import { Maps } from "jeekOS/Maps";
-import { CorpMats } from "jeekOS/Corpmats";
+import { CorpMats } from "jeekOS/CorpMats";
 import { AugChart } from "jeekOS/AugChart";
 
 let gangMemberNames: string[] = [

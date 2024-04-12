@@ -636,6 +636,11 @@ export class Contracts {
     return this.contracts;
   }
   async loop() {
+    let sidebar = this.Game.doc.querySelector(".sb")!;
+    while (!sidebar) {
+      await this.Game.ns.asleep(0);
+      sidebar = this.Game.doc.querySelector(".sb")!;
+    }
     this.log = this.Game.doc
       .querySelector(".sb")!
       .querySelector(".contractbox");
